@@ -43,7 +43,9 @@ def _build_call_tool_result(result: list, is_error: bool) -> CallToolResult:
         else:
             content.append(item)
 
-    return CallToolResult(content=content, is_error=is_error, structured_content=structured_content)
+    return CallToolResult(
+        content=content, is_error=is_error, structured_content=structured_content
+    )
 
 
 async def execute_tool(
