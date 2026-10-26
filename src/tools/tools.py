@@ -1075,8 +1075,12 @@ async def ppl_query_tool(args: PplQueryArgs) -> list[dict]:
         await check_tool_compatibility('PPLQueryTool', args)
         result = await ppl_query(args)
         if isinstance(result, str):
+            # Plain-text formats (csv, raw): the transport returns a raw string,
+            # not a parsed object, so there is no structured_content to set.
             return [{'type': 'text', 'text': f'PPL query results:\n{result}'}]
         else:
+            # Default jdbc format: transport returns a parsed dict — expose it
+            # as structured_content for clients that can consume it directly.
             formatted_result = format_json(result)
             return [
                 {
