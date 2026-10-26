@@ -28,6 +28,7 @@ def _build_call_tool_result(result: list, is_error: bool) -> CallToolResult:
     # Convert a tool's raw content list into a CallToolResult.
 
     content: list[ContentBlock] = []
+    structured_content = None
     for item in result or []:
         if isinstance(item, dict):
             content.append(
@@ -36,10 +37,13 @@ def _build_call_tool_result(result: list, is_error: bool) -> CallToolResult:
                     text=item.get('text', ''),
                 )
             )
+            if 'json_data' in item and structured_content is None:
+                data = item['json_data']
+                structured_content = data if isinstance(data, dict) else {'result': data}
         else:
             content.append(item)
 
-    return CallToolResult(content=content, is_error=is_error)
+    return CallToolResult(content=content, is_error=is_error, structured_content=structured_content)
 
 
 async def execute_tool(
